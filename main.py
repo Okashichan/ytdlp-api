@@ -8,6 +8,7 @@ import time
 import uvicorn
 import os
 from dotenv import load_dotenv
+import mimetypes
 
 load_dotenv()
 app = FastAPI()
@@ -61,7 +62,8 @@ async def get_video_url(youtube_url: str):
 async def get_video(video_name: str):
     video_path = os.path.join(VIDEO_DIR, video_name)
     if os.path.exists(video_path):
-        return FileResponse(video_path)
+        mime_type, _ = mimetypes.guess_type(video_path)
+        return FileResponse(video_path, media_type=mime_type)
     else:
         raise HTTPException(status_code=404, detail="Video not found")
 
