@@ -21,6 +21,7 @@ ydl_opts = {
     'format': 'best',
     'quiet': True,
     'outtmpl': f'{VIDEO_DIR}/%(id)s.%(ext)s',
+    'max_filesize': 100 * 1024 * 1024
 }
 
 
