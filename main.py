@@ -6,7 +6,6 @@ import os
 import threading
 import time
 import uvicorn
-import os
 from dotenv import load_dotenv
 import mimetypes
 
@@ -22,7 +21,7 @@ ydl_opts = {
     'format': 'best',
     'quiet': True,
     'outtmpl': f'{VIDEO_DIR}/%(id)s.%(ext)s',
-    'max_filesize': 100 * 1024 * 1024
+    'max_filesize': 50 * 1024 * 1024
 }
 
 
@@ -31,9 +30,14 @@ def cleanup_videos():
         for filename in os.listdir(VIDEO_DIR):
             filepath = os.path.join(VIDEO_DIR, filename)
             if os.path.isfile(filepath) and time.time() - os.path.getmtime(filepath) >= 3600:
+                print(f"Removing {filepath}")
+                sys.stdout.flush()
                 os.remove(filepath)
         time.sleep(3600)  # Run the cleanup every hour
 
+
+if not os.path.exists(VIDEO_DIR):
+    os.makedirs(VIDEO_DIR)
 
 # Start the cleanup thread
 cleanup_thread = threading.Thread(target=cleanup_videos)
@@ -70,7 +74,5 @@ async def get_video(video_name: str):
 if __name__ == "__main__":
     if not PUBLIC_URL:
         sys.exit("Error: PUBLIC_URL environment variable not set")
-    if not os.path.exists(VIDEO_DIR):
-        os.makedirs(VIDEO_DIR)
 
     uvicorn.run(app, host=HOST, port=PORT)
